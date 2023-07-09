@@ -6066,22 +6066,14 @@ public class RSInterface {
 		for(int index = 0;index<colourCount;index++) {
 			final int fIndex = index;
 			int childId = baseId + (index) + 1;
-
 			modelView.colourReplace[index] = modelView.colourFind[index];
 			RSInterface child = addInterface(childId);
 			child.type = TYPE_COLOR_PICKER;
-			
 			ColorPicker colorPicker = new ColorPicker(childId);
 			child.colorPicker = colorPicker;
-			colorPicker.getValue().set(Rasterizer3D.hslToRgb[modelView.colourFind[fIndex]]);
-			colorPicker.getValue().addListener((observable, oldVal, newVal) -> {
-				if(oldVal != newVal) {
-					modelView.colourReplace[fIndex] = ColourUtils.RGB_to_RS2HSB(newVal.intValue());
-					modelView.generateDisplayModel();
-					
-				}
-			});
-			
+			colorPicker.setValue(Rasterizer3D.hslToRgb[modelView.colourFind[fIndex]]);
+			modelView.colourReplace[fIndex] = ColourUtils.RGB_to_RS2HSB(colorPicker.getValue());
+			modelView.generateDisplayModel();
 			addText(childId + colourCount, text[index], defaultTextDrawingAreas, 0, 0xc27e41, true, true);
 			rsItf.child(index + (colourCount * 2) + (indexOffset - 1), childId, positions[index][0], positions[index][1]);
 			rsItf.child(index + indexOffset, childId + colourCount, positions[index][0] + 38, positions[index][1] + 71);
