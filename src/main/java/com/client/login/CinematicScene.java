@@ -24,8 +24,6 @@ import com.client.utilities.Vector3;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -37,18 +35,17 @@ public class CinematicScene {
 
 		blackWindow = new Sprite(Client.currentGameWidth, Client.currentGameHeight);
 		Arrays.fill(blackWindow.myPixels, (255 << 24 ) + 0x050505);
-		this.fadeToBlack.addListener((observable, oldVal, newVal) -> {
-			if(newVal.doubleValue() >= 100) {
-				setNextScene();
-				resetMapData();
-				this.prepareLoginScene();
-			}
-			if(newVal.doubleValue() <= 0) {
-				resetSceneGraph();
-				setNextCamera();
-				this.fadeToBlack.set(-1);
-			}
-		});
+		double newVal = this.fadeToBlack;
+		if (newVal >= 100) {
+			setNextScene();
+			resetMapData();
+			prepareLoginScene();
+		}
+		if (newVal <= 0) {
+			resetSceneGraph();
+			setNextCamera();
+			this.fadeToBlack = -1;
+		}
 		this.setupCamera();
 		this.setupWorldMap();
 		//randomizeMaps();
@@ -303,15 +300,15 @@ public class CinematicScene {
 			} catch(Exception ex) {
 				ex.printStackTrace();
 			}
-			if(fadeFromBlack.get() > 0.0) {
-				fadeFromBlack.set( fadeFromBlack.get() - (fadeFromBlack.get() < 93 ? 0.5 : 0.5));
-				blackWindow.drawAdvancedTransparentSprite(0, 0, (int) Math.ceil(fadeFromBlack.get()));
-			} else if(fadeToBlack.get() > 0) {
-				fadeToBlack.set(fadeToBlack.get() - 0.5);
-				blackWindow.drawAdvancedTransparentSprite(0, 0, 100 - (int) Math.ceil(fadeToBlack.get()));
+			if(fadeFromBlack > 0.0) {
+				fadeFromBlack = fadeFromBlack - (fadeFromBlack < 93 ? 0.5 : 0.5);
+				blackWindow.drawAdvancedTransparentSprite(0, 0, (int) Math.ceil(fadeFromBlack));
+			} else if(fadeToBlack > 0) {
+				fadeToBlack = fadeToBlack- 0.5;
+				blackWindow.drawAdvancedTransparentSprite(0, 0, 100 - (int) Math.ceil(fadeToBlack));
 			}
 		} else {
-			blackWindow.drawAdvancedTransparentSprite(0, 0, (int) Math.ceil(fadeFromBlack.get()));
+			blackWindow.drawAdvancedTransparentSprite(0, 0, (int) Math.ceil(fadeFromBlack));
 			prepareLoginScene();
 		}
     }
@@ -359,7 +356,7 @@ public class CinematicScene {
 	}
 	
 	public void proceedToNextScene() {
-		fadeToBlack.set(100);
+		fadeToBlack = 100.0;
 	}
 	
 	public void moveScene(int x, int y) {
@@ -374,7 +371,7 @@ public class CinematicScene {
 	
 	public void resetSceneGraph() {
 		this.scenegraph = Optional.empty();
-		this.fadeFromBlack.set(100);
+		this.fadeFromBlack = 100.0;
 	}
 
 	@Getter
@@ -402,9 +399,9 @@ public class CinematicScene {
 	@Setter
 	private CameraMove cameraMove;
 	@Getter
-	private DoubleProperty fadeFromBlack = new SimpleDoubleProperty(100.0);
+	private double fadeFromBlack = 100.0;
 	@Getter
-	private DoubleProperty fadeToBlack = new SimpleDoubleProperty(-1);
+	private double fadeToBlack = -1;
 	
 	private ConcurrentLinkedQueue<Vector3> mapPositions = Queues.newConcurrentLinkedQueue();
 	private ConcurrentLinkedQueue<CameraMove> mapCameraMoves = Queues.newConcurrentLinkedQueue();
@@ -416,7 +413,7 @@ public class CinematicScene {
 	}
 
 	public void resetFade() {
-		this.fadeFromBlack.set(100);
+		this.fadeFromBlack = 100.0;
 	}
 
 	public void resizeFade() {

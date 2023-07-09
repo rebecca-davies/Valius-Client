@@ -1,11 +1,9 @@
 package com.client.graphics.interfaces.impl;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
@@ -18,7 +16,6 @@ import com.client.draw.raster.Rasterizer3D;
 import com.client.graphics.interfaces.RSInterface;
 import com.client.utilities.ColourUtils;
 
-import javafx.beans.property.SimpleIntegerProperty;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,7 +32,6 @@ public class ColorPicker {
 		this.id = id;
 		generateGradient();
 		regenerateSprites();
-		value.addListener((obs, oldVal, newVal) -> calculatePosition());
 	}
 	
 	@Getter @Setter
@@ -49,7 +45,6 @@ public class ColorPicker {
 	private static double currentBrightness;
 	
 	public static void handleClick(int mX, int mY, boolean drag) {
-
 		int interfaceId = Client.openInterfaceID;
 		if (interfaceId != -1) {
 			RSInterface widget = RSInterface.interfaceCache[interfaceId];
@@ -158,7 +153,7 @@ public class ColorPicker {
 
 	}
 	public void grabColor() {
-		value.set(selectionCircle.myPixels[selectionX + (selectionY * selectionCircle.myWidth)]);
+		value = (selectionCircle.myPixels[selectionX + (selectionY * selectionCircle.myWidth)]);
 	}
 	
 	public boolean validRS2Color() {
@@ -167,7 +162,7 @@ public class ColorPicker {
 	}
 	
 	public int getValueInt() {
-		return value.get();
+		return value;
 	}
 	
 	private boolean inBrightnessSlider(int baseX, int baseY, int x, int y) {
@@ -262,7 +257,7 @@ public class ColorPicker {
 	private int size = radius * 2;
 	private int selectionX = radius, selectionY = radius;
 	@Getter
-	private SimpleIntegerProperty value = new SimpleIntegerProperty(0xFFFFFF);
+	private int value = 0xFFFFFF;
 
 	private Sprite selectionCircle, pickerCircle, selectionBg;
 	
@@ -426,7 +421,8 @@ public class ColorPicker {
 		return rgb;
 	}
 	public void setValue(int colour) {
-		value.set(colour);
+		value = colour;
+		calculatePosition();
 	}
 	
 	public void calculatePosition() {
